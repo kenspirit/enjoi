@@ -1,4 +1,4 @@
-
+![Test](https://github.com/kenspirit/json-2-joi/workflows/Test/badge.svg) [![npm version](https://badge.fury.io/js/json-2-joi.svg)](https://badge.fury.io/js/json-2-joi)
 
 # json-2-joi
 
