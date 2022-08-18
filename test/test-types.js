@@ -81,30 +81,6 @@ Test('types', function (t) {
         t.ok(schema.validate([1, 'abc', 'def']).error, 'error');
     });
 
-    t.test('arrays and refs', function (t) {
-        t.plan(2);
-
-        const schema = Enjoi.schema({
-            'type': 'array',
-            'items': {
-                '$ref': 'definitions#/number'
-            }
-        }, {
-            subSchemas: {
-                'definitions': {
-                    'number': {
-                        'type': 'number',
-                        'minimum': 0,
-                        'maximum': 2
-                    }
-                }
-            }
-        });
-
-        t.ok(!schema.validate([1, 2]).error, 'no error');
-        t.ok(schema.validate([1, 3]).error, 'error');
-    });
-
     t.test('number exclusiveMinimum exclusiveMaximum', function (t) {
         t.plan(3);
 
@@ -482,16 +458,96 @@ Test('types', function (t) {
         t.ok(!schema.validate({ name: 'test' }).error, 'no error.');
     });
 
+    t.test('const as string type', function (t) {
+        t.plan(2);
+
+        const schema = Enjoi.schema({
+            const: 'KC'
+        });
+
+        t.ok(schema.validate('KC').value, 'should be const string');
+        t.ok(schema.validate('K').error, 'error');
+    });
+
+    t.test('const as number type', function (t) {
+        t.plan(2);
+
+        const schema = Enjoi.schema({
+            const: 1
+        });
+
+        t.ok(schema.validate(1).value, 'should be const number');
+        t.ok(schema.validate(0).error, 'error');
+    });
+
+    t.test('const as boolean type', function (t) {
+        t.plan(2);
+
+        const schema = Enjoi.schema({
+            const: true
+        });
+
+        t.ok(schema.validate(true).value, 'should be const boolean');
+        t.ok(schema.validate(0).error, 'error');
+    });
+
+    t.test('const as any type', function (t) {
+        t.plan(2);
+
+        const schema = Enjoi.schema({
+            const: {}
+        });
+
+        t.ok(schema.validate({}).value, 'should be const boolean');
+        t.ok(schema.validate(0).error, 'error');
+    });
+
+    t.test('examples', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                lengthUnit: {
+                    type: 'string',
+                    examples: ['cm', 'm']
+                }
+            }
+        });
+
+        const joiDesc = schema.describe();
+        t.deepEqual(joiDesc.keys.lengthUnit.examples, ['cm'], 'example should be set based on examples');
+    });
+
+    t.test('examples - set by enum', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                lengthUnit: {
+                    type: 'string',
+                    enum: ['cm', 'm']
+                }
+            }
+        });
+
+        const joiDesc = schema.describe();
+        t.deepEqual(joiDesc.keys.lengthUnit.examples, ['cm'], 'example should be set based on examples');
+    });
+
     t.test('enum', function (t) {
-        t.plan(7);
+        t.plan(8);
 
         let schema = Enjoi.schema({
             'enum': ['A', 'B']
         });
+        const joiDesc = schema.describe();
 
         t.ok(!schema.validate('A').error, 'no error.');
         t.ok(!schema.validate('B').error, 'no error.');
         t.ok(schema.validate('C').error, 'error.');
+        t.deepEqual(joiDesc.examples, ['A']);
 
         schema = Enjoi.schema({
             type: 'string',
@@ -543,77 +599,5 @@ Test('types', function (t) {
         t.ok(!schema.validate(null).error, 'no error.');
         t.ok(schema.validate(false).error, 'error.');
     });
-
-    t.test('recursive type', function (t) {
-        t.plan(2);
-
-        const jsonSchema = {
-            type: "object",
-            properties: {
-                value: { type: "string" },
-                next: { $ref: '#' }
-            }
-        }
-        const schema = Enjoi.schema(jsonSchema);
-
-        t.ok(!schema.validate({
-            value: "foo",
-            next: {
-                value: "bar",
-                next: {
-                    value: "baz"
-                }
-            }
-        }).error, 'no error');
-        t.ok(schema.validate({
-            value: "foo",
-            next: {
-                value: "bar",
-                next: {
-                    value: 0
-                }
-            }
-        }).error, 'error');
-    });
-
-    t.test('ref to uncle doesn\'t cause joi error', function (t) {
-        t.plan(1);
-
-        const jsonSchema = {
-            type: "object",
-            properties: {
-                product: {
-                    type: "object",
-                    properties: {
-                        id: {
-                            type: 'integer'
-                        }
-                    }
-                },
-                suggestions: {
-                    type: "array",
-                    items: {
-                        type: "object",
-                        properties: {
-                            product: {
-                                $ref: '#/properties/product'
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        const schema = Enjoi.schema(jsonSchema);
-
-        t.ok(!schema.validate({
-            product: {
-                id: 5
-            },
-            suggestions: [{
-                product: { id: 6 }
-            }]
-        }).error, 'no error');
-    });
-
 });
 

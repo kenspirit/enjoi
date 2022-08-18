@@ -34,6 +34,40 @@ Test('options features', function (t) {
         t.equal(result.value.toString(), 'hello', 'no error');
     });
 
+    t.test('refineDescription', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            type: 'string',
+            description: 'Normal String'
+        }, {
+            refineDescription(schema) {
+                return schema.description ? schema.description.toUpperCase() : '';
+            }
+        });
+
+        const joiDesc = schema.describe();
+        t.equal(joiDesc.flags.description, 'NORMAL STRING', 'Schema description should be transformed correctly');
+    });
+
+    t.test('allowNull', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                fieldA: {
+                    type: 'string'
+                }
+            }
+        }, {
+            allowNull: true
+        });
+
+        const joiDesc = schema.describe();
+        t.ok(joiDesc.keys.fieldA.allow.includes(null), 'Should allow null for NOT required field');
+    });
+
     t.test('custom type', function (t) {
         t.plan(2);
 
@@ -101,63 +135,6 @@ Test('options features', function (t) {
         t.ok(!schema.validate({ file: 'data', consumes: 'multipart/form-data' }).error);
         t.ok(schema.validate({ file: 'data', consumes: 'application/json' }).error);
     });
-
-    t.test('with external ref', function (t) {
-        t.plan(1);
-
-        const schema = Enjoi.schema({
-            'title': 'Example Schema',
-            'type': 'object',
-            'properties': {
-                'name': {
-                    '$ref': 'definitions#/name'
-                }
-            }
-        }, {
-            subSchemas: {
-                'definitions': {
-                    'name': {
-                        'type': 'string'
-                    }
-                }
-            }
-        });
-
-        t.ok(!schema.validate({ name: 'Joe' }).error);
-    });
-
-    t.test('with both inline and external refs', function (t) {
-        t.plan(1);
-
-        const schema = Enjoi.schema({
-            'title': 'Example Schema',
-            'type': 'object',
-            'properties': {
-                'firstname': {
-                    '$ref': '#/definitions/firstname'
-                },
-                'surname': {
-                    '$ref': 'definitions#/surname'
-                }
-            },
-            'definitions': {
-                'firstname': {
-                    'type': 'string'
-                }
-            }
-        }, {
-            subSchemas: {
-                'definitions': {
-                    'surname': {
-                        'type': 'string'
-                    }
-                }
-            }
-        });
-
-        t.ok(!schema.validate({ firstname: 'Joe', surname: 'Doe' }).error);
-    });
-
 });
 
 Test('extensions', function (t) {

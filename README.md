@@ -1,8 +1,28 @@
-![Build](https://github.com/tlivings/enjoi/workflows/Node.js%20CI/badge.svg) [![NPM version](https://badge.fury.io/js/enjoi.png)](http://badge.fury.io/js/enjoi)
+
 
 # enjoi
 
 Converts a JSON schema to a Joi schema for object validation.
+
+## Change based on the forked version:
+
+- Provided `refineDescription(schema)`, `allowNull` options
+- Change cycle reference resovling without self-generating id and rely on $id if defined in JSON schema
+- Support `const` keyword in JSON schema
+- Support `example` setting for Joi based on JSON schema's `examples`, `default` or `enum`
+- Support `contains` keyword in JSON schema using Joi's `has` method
+- Support `$anchor` keyword in JSON schema
+- **Big Change** on `$ref` and `subSchemas`.  Please refer to [](test/test-references.js) for detail usage.  Currently, four format of `$ref` are supported:
+    * id
+    * [baseUri]#anchor
+    * [baseUri]#/$defs/shared
+    * [baseUri]#/$defs/shared/properties/level1
+
+    **subSchemas** will be modified for two reason:
+    * If any subSchema does not have `$id` field, it will be added using the corresponding key in `subSchemas` object.
+    * New key-value pair will be added into it if the **schema** or any its subschema being parsed has `$id` field.  Root schema will be added into it as well (if missing $id field, empty string is used as key).
+
+## Usage
 
 ### Schema Support
 
@@ -24,9 +44,11 @@ Please file issues for other unsupported features.
 ### Options
 
 - `subSchemas` - an (optional) object with keys representing schema ids, and values representing schemas.
+- `refineDescription(schema)` - an (optional) function to call to apply to the JSON schema so that it's possible to return customized description.
 - `refineType(type, format)` - an (optional) function to call to apply to type based on the type and format of the JSON schema.
 - `refineSchema(joiSchema, jsonSchema)` - an (optional) function to call to apply to adjust Joi schema base on the original JSON schema. Primary use case is handling `nullable` flag in OpenAPI 3.0
 - `extensions` - an array of extensions to pass [joi.extend](https://github.com/hapijs/joi/blob/master/API.md#extendextension).
+- `allowNull` - Allows null value when the field is NOT required with a default value of `false`.
 - `strictMode` - make schemas `strict(value)` with a default value of `false`.
 
 Example:
@@ -66,56 +88,104 @@ Example:
 
 ```javascript
 const schema = Enjoi.schema({
+    $id: 'top',
     type: 'object',
     properties: {
-        a: {
-            $ref: '#/b' // # is root schema
+        product: {
+            $ref: 'prod'
         },
-        b: {
-            type: 'string'
-        },
-        c: {
-            $ref: 'sub#/d' // sub# is 'sub' under subSchemas.
+        suggestions: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    product: {
+                        $ref: 'product'
+                    },
+                    weight: {
+                        $ref: 'measurement'
+                    }
+                }
+            }
         }
     }
 }, {
     subSchemas: {
-        sub: {
-            d: {
-                'type': 'string'
+        measurement: {
+            type: 'object',
+            properties: {
+                quantity: {
+                    $anchor: 'subNumber',
+                    type: 'number'
+                },
+                unit: {
+                    type: 'string'
+                }
+            }
+        },
+        product: {
+            $id: 'prod',
+            type: 'object',
+            properties: {
+                isUsed: {
+                    $anchor: 'subBoolean',
+                    type: 'boolean'
+                },
+                isDangerous: {
+                    $ref: '#subBoolean'
+                },
+                width: {
+                    $ref: 'measurement'
+                },
+                length: {
+                    $ref: '#/properties/width'
+                },
+                price: {
+                    $ref: 'measurement#subNumber'
+                }
             }
         }
     }
 });
 ```
 
-### Defaults
+### Reuse JOI Schema Resolver
 
-The above example `subSchemas` can be added instead via defaults:
+Sometimes, we might have a base set of `subSchemas` which is used for building a large number of JSON schema and so we do not want to parse these common `subSchemas` again and again.  We can first construct a JOI Schema Resolver first and then convert other JSON one by one.
 
 ```javascript
 
-const enjoi = Enjoi.defaults({
+const enjoi = Enjoi.resolver({
     subSchemas: {
-        sub: {
-            d: {
-                'type': 'string'
+        measurement: {
+            type: 'object',
+            properties: {
+                quantity: {
+                    $anchor: 'subNumber',
+                    type: 'number'
+                },
+                unit: {
+                    type: 'string'
+                }
             }
         }
     }
 });
 
-const schema = enjoi.schema({
+const weightSchema = enjoi.convert({
     type: 'object',
     properties: {
-        a: {
-            $ref: '#/b' // # is root schema
-        },
-        b: {
-            type: 'string'
-        },
-        c: {
-            $ref: 'sub#/d' // sub# is 'sub' under subSchemas.
+        weight: {
+            $ref: 'measurement'
+        }
+    }
+});
+
+const lengthSchema = enjoi.convert({
+    type: 'object',
+    properties: {
+        length: {
+            $ref: 'measurement'
         }
     }
 });

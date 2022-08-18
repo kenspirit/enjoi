@@ -1,6 +1,6 @@
 {
-  "name": "enjoi",
-  "version": "9.0.1",
+  "name": "@kenspirit/enjoi",
+  "version": "1.0.0",
   "license": "Apache 2.0",
   "description": "Converts json-schema to Joi schema.",
   "main": "./index.js",
@@ -11,59 +11,42 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/tlivings/enjoi.git"
+    "url": "git://github.com/kenspirit/enjoi.git"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "keywords": [
+    "json-to-joi",
     "joi",
     "json-schema",
     "json",
     "schema",
     "validation",
-    "hapi",
-    "hapijs"
+    "conversion",
+    "hapi"
   ],
-  "author": "Trevor Livingston <tlivings@gmail.com>",
-  "contributors": [
-    "maldimirov",
-    "yujunlong2000",
-    "morgs32",
-    "hpadrick",
-    "justinmchase",
-    "nevezide",
-    "iamjoeker",
-    "Nava2",
-    "djMax",
-    "jojow",
-    "pibi",
-    "normpng",
-    "bardzusny",
-    "vh",
-    "nfstein",
-    "dimichgh",
-    "yosheeck",
-    "joescho",
-    "rmothilal",
-    "sprootshift",
-    "nlundquist"
-  ],
+  "author": "Ken Chen <chengusky@gmail.com>",
   "bugs": {
-    "url": "https://github.com/tlivings/enjoi/issues"
+    "url": "https://github.com/kenspirit/enjoi/issues"
   },
-  "homepage": "https://github.com/tlivings/enjoi",
+  "homepage": "https://github.com/kenspirit/enjoi",
   "dependencies": {
-    "@hapi/bourne": "^2.0.0",
-    "@hapi/hoek": "^9.0.3"
+    "@hapi/bourne": "^3.0.0",
+    "@hapi/hoek": "^10.0.1",
+    "debug": "^4.3.4"
   },
   "peerDependencies": {
-    "joi": "^17.1.0"
+    "joi": "^17.6.0"
   },
   "devDependencies": {
-    "joi": "^17.1.0",
+    "joi": "^17.6.0",
     "eslint": "^6.8.0",
-    "nyc": "^15.0.0",
-    "tape": "^5.0.0"
-  }
+    "nyc": "^15.1.0",
+    "tape": "^5.5.3"
+  },
+  "files": [
+    "lib/**/*.js",
+    "index.js"
+  ]
 }

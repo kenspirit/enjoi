@@ -1,7 +1,6 @@
 
 const Test = require('tape');
 const Enjoi = require('../index');
-const Joi = require('joi');
 
 Test('enjoi', function (t) {
 
@@ -48,126 +47,51 @@ Test('enjoi', function (t) {
         t.ok(schema.validate({ firstName: 'John', lastName: 'Doe', age: 45, tags: ['', 'human'] }).error, 'error');
     });
 
-    t.test('with ref', function (t) {
-        t.plan(1);
+    t.test('convert', function(t) {
+        t.plan(5);
 
-        const schema = Enjoi.schema({
-            'title': 'Example Schema',
-            'type': 'object',
-            'properties': {
-                'name': {
-                    '$ref': '#/definitions/name'
+        const subSchemas = {
+            measurement: {
+                type: 'object',
+                properties: {
+                    quantity: {
+                        $anchor: 'subNumber',
+                        type: 'number'
+                    },
+                    unit: {
+                        type: 'string'
+                    }
                 }
-            },
-            'definitions': {
-                'name': {
-                    'type': 'string'
+            }
+        };
+        const enjoi = Enjoi.resolver({
+            subSchemas
+        });
+
+        enjoi.convert({
+            type: 'object',
+            properties: {
+                weight: {
+                    $ref: 'measurement'
                 }
             }
         });
 
-        t.ok(!schema.validate({ name: 'Joe' }).error, 'no error');
-    });
+        t.notOk(subSchemas[''], 'weight schema not persisted');
 
-});
-
-Test('enjoi defaults', function (t) {
-
-    t.test('defaults', function (t) {
-        t.plan(1);
-
-        const enjoi = Enjoi.defaults({
-            extensions: [{
-                    type: 'test',
-                    base: Joi.string()
-                }]
-        });
-
-        const schema = enjoi.schema({
-            type: 'test'
-        });
-
-        t.ok(!schema.validate('string').error, 'no error');
-    });
-
-    t.test('overrides', function (t) {
-        t.plan(1);
-
-        const enjoi = Enjoi.defaults({
-            extensions: [{
-                type: 'test',
-                base: Joi.string()
-            }]
-        });
-
-        const schema = enjoi.schema({
-            type: 'test'
-        }, {
-            extensions: [{
-                type: 'test',
-                base: Joi.number()
-            }]
-        });
-
-        t.ok(schema.validate('string').error, 'error');
-    });
-});
-
-Test('enjoi extensions', function (t) {
-    t.test('overrides extensions', function (t) {
-        t.plan(5);
-
-        const enjoi = Enjoi.defaults({
-            extensions: [
-                (joi) => ({
-                    type: 'special',
-                    base: joi.string(),
-                    rules: {
-                        hello: {
-                            validate(value, helpers, args, options) {
-
-                                if (value === 'hello') {
-                                    return value;
-                                }
-
-                                return helpers.error('special.hello');
-                            }
-                        }
-                    },
-                    messages: {
-                        'special.hello': '{{#label}} must say hello'
-                    }
-                })
-            ]
-        });
-
-        const options = {
-            extensions: [{
-                type: 'foobar',
-                rules: {
-                    foo: {
-                        validate(value, helpers, args, options) {
-                            return null;
-                        }
-                    },
-                    bar: {
-                        validate(value, helpers, args, options) {
-                            return helpers.error('special.bar');
-                        }
-                    }
-                },
-                messages: {
-                    'special.bar': '{#label} oh no bar !'
+        enjoi.convert({
+            $id: 'length',
+            type: 'object',
+            properties: {
+                length: {
+                    $ref: 'measurement'
                 }
-            }]
-        };
+            }
+        });
 
-        t.ok(!enjoi.schema({ type: 'special' }, options).hello().validate('hello').error, 'no error');
-        t.ok(enjoi.schema({ type: 'special' }, options).hello().validate('greetings').error, 'error');
-        t.throws(() => enjoi.schema({ type: 'foo' }, options), 'exception');
-
-        t.ok(!enjoi.schema({ type: 'foobar' }, options).foo().validate('hello').error, 'no error');
-        t.ok(enjoi.schema({ type: 'foobar' }, options).bar().validate('greetings').error, 'error');
-    });
-
+        t.notOk(subSchemas['length'], 'length schema not persisted');
+        t.equal(enjoi.joiSharedSchemas.size, 2);
+        t.ok(enjoi.joiSharedSchemas.get('measurement'), 'measurement should exists');
+        t.ok(enjoi.joiSharedSchemas.get('measurement#subNumber'), 'subNumber should exists');
+    })
 });

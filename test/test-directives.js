@@ -110,7 +110,7 @@ Test('directives', function (t) {
     });
 
     t.test('default values', function (t) {
-        t.plan(4);
+        t.plan(5);
 
         const schema = {
             type: 'object',
@@ -139,11 +139,14 @@ Test('directives', function (t) {
             required: ['user']
         };
 
-        let result = Enjoi.schema(schema).validate({ user: 'test@domain.com' })
-        t.ok(!result.error, 'no error')
+        const joiSchema = Enjoi.schema(schema);
+        const joiDesc = joiSchema.describe();
+        let result = joiSchema.validate({ user: 'test@domain.com' });
+        t.ok(!result.error, 'no error');
         t.equal(result.value.locale, 'en-US');
         t.equal(result.value.isSubscribed, false);
         t.equal(result.value.posts, 0);
+        t.deepEqual(joiDesc.keys.locale.examples, ['en-US']);
     });
 
     t.test('additionalProperties false should not allow additional properties', function (t) {
@@ -418,5 +421,65 @@ Test('allOf', function (t) {
 
         t.ok(!schema.validate({ name: 'test', phoneCountryCode: 'US' }).error, 'no error');
         t.ok(schema.validate({ name: 'test' }).error, 'error');
+    });
+
+    t.test('contains', function (t) {
+        t.plan(2);
+
+        const schema = Enjoi.schema({
+            "properties": {
+                "references": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "refType": {
+                                "type": "string"
+                            },
+                            "refNumber": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "refType"
+                        ]
+                    },
+                    "minItems": 1,
+                    "minContains": 1,
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "refType": {
+                                "const": "AHP"
+                            },
+                            "refNumber": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        t.ok(schema.validate({
+            references: [
+                {
+                    refType: 'AHP',
+                    refNumber: '123456'
+                },
+                {
+                    refType: 'ANY',
+                    refNumber: '3456'
+                }
+            ]
+        }).value, 'no error');
+        t.ok(schema.validate({
+            references: [
+                {
+                    refType: 'ANY',
+                    refNumber: '3456'
+                }
+            ]
+        }).error, 'error - not contains enough item');
     });
 });
