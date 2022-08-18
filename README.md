@@ -12,7 +12,7 @@ Converts a JSON schema to a Joi schema for object validation.
 - Support `example` setting for Joi based on JSON schema's `examples`, `default` or `enum`
 - Support `contains` keyword in JSON schema using Joi's `has` method
 - Support `$anchor` keyword in JSON schema
-- **Big Change** on `$ref` and `subSchemas`.  Please refer to [](test/test-references.js) for detail usage.  Currently, four format of `$ref` are supported:
+- **Big Change** on `$ref` and `subSchemas`.  Please refer to [test/test-references.js](test/test-references.js) for detail usage.  Currently, four format of `$ref` are supported:
     * id
     * [baseUri]#anchor
     * [baseUri]#/$defs/shared
@@ -39,7 +39,7 @@ Please file issues for other unsupported features.
 - `enjoi.schema(schema [, options])`
     - `schema` - a JSON schema or a string type representation (such as `'integer'`).
     - `options` - an (optional) object of additional options such as `subSchemas` and custom `types`.
-- `enjoi.defaults(options)` - configure defaults `options` to be used with all `enjoi.schema` calls. `enjoi.schema` options passed will always override defaults set here.
+- `enjoi.resolver(options)` - Creates a schema resolver based on `options`.
 
 ### Options
 
