@@ -12,21 +12,22 @@ Converts a JSON schema to a Joi schema for object validation.
 - Support `example` setting for Joi based on JSON schema's `examples`, `default` or `enum`
 - Support `contains` keyword in JSON schema using Joi's `has` method
 - Support `$anchor` keyword in JSON schema
+- Remove `defaults` API.  Please refer to section **Reuse JOI Schema Resolver** for similar usage.
 - **Big Change** on `$ref` and `subSchemas`.  Please refer to [test/test-references.js](test/test-references.js) for detail usage.  Currently, four format of `$ref` are supported:
     * id
     * [baseUri]#anchor
     * [baseUri]#/$defs/shared
     * [baseUri]#/$defs/shared/properties/level1
 
-    **subSchemas** will be modified for two reason:
+    **subSchemas will be modified** for two reason:
     * If any subSchema does not have `$id` field, it will be added using the corresponding key in `subSchemas` object.
-    * New key-value pair will be added into it if the **schema** or any its subschema being parsed has `$id` field.  Root schema will be added into it as well (if missing $id field, empty string is used as key).
+    * New key-value pair will be added into it if the schema or any its subschema being parsed has `$id` field.
 
 ## Usage
 
 ### Schema Support
 
-`json2Joi` does not support all of json-schema.
+`json-2-joi` does not support all of json-schema.
 
 Here is a list of some known missing keyword support still being worked on:
 
