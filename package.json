@@ -33,7 +33,7 @@
   "homepage": "https://github.com/kenspirit/enjoi",
   "dependencies": {
     "@hapi/bourne": "^3.0.0",
-    "@hapi/hoek": "^10.0.1",
+    "@hapi/hoek": "^9.3.0",
     "debug": "^4.3.4"
   },
   "peerDependencies": {
