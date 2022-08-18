@@ -1,10 +1,10 @@
 
 
-# enjoi
+# json-2-joi
 
 Converts a JSON schema to a Joi schema for object validation.
 
-## Change based on the forked version:
+## Change based on the forked version (Json2Joi):
 
 - Provided `refineDescription(schema)`, `allowNull` options
 - Change cycle reference resovling without self-generating id and rely on $id if defined in JSON schema
@@ -26,7 +26,7 @@ Converts a JSON schema to a Joi schema for object validation.
 
 ### Schema Support
 
-`enjoi` does not support all of json-schema.
+`json2Joi` does not support all of json-schema.
 
 Here is a list of some known missing keyword support still being worked on:
 
@@ -36,10 +36,10 @@ Please file issues for other unsupported features.
 
 ### API
 
-- `enjoi.schema(schema [, options])`
+- `json2Joi.schema(schema [, options])`
     - `schema` - a JSON schema or a string type representation (such as `'integer'`).
     - `options` - an (optional) object of additional options such as `subSchemas` and custom `types`.
-- `enjoi.resolver(options)` - Creates a schema resolver based on `options`.
+- `json2Joi.resolver(options)` - Creates a schema resolver based on `options`.
 
 ### Options
 
@@ -55,9 +55,9 @@ Example:
 
 ```javascript
 const Joi = require('joi');
-const Enjoi = require('enjoi');
+const Json2Joi = require('json-2-joi');
 
-const schema = Enjoi.schema({
+const schema = Json2Joi.schema({
     type: 'object',
     properties: {
         firstName: {
@@ -87,7 +87,7 @@ Sub-schemas can be provided through the `subSchemas` option for `$ref` values to
 Example:
 
 ```javascript
-const schema = Enjoi.schema({
+const schema = Json2Joi.schema({
     $id: 'top',
     type: 'object',
     properties: {
@@ -155,7 +155,7 @@ Sometimes, we might have a base set of `subSchemas` which is used for building a
 
 ```javascript
 
-const enjoi = Enjoi.resolver({
+const json2Joi = Json2Joi.resolver({
     subSchemas: {
         measurement: {
             type: 'object',
@@ -172,7 +172,7 @@ const enjoi = Enjoi.resolver({
     }
 });
 
-const weightSchema = enjoi.convert({
+const weightSchema = json2Joi.convert({
     type: 'object',
     properties: {
         weight: {
@@ -181,7 +181,7 @@ const weightSchema = enjoi.convert({
     }
 });
 
-const lengthSchema = enjoi.convert({
+const lengthSchema = json2Joi.convert({
     type: 'object',
     properties: {
         length: {
@@ -196,7 +196,7 @@ const lengthSchema = enjoi.convert({
 Custom types can be provided through the `extensions` option.
 
 ```javascript
-const schema = Enjoi.schema({
+const schema = Json2Joi.schema({
     type: 'thing'
 }, {
     extensions: [{
@@ -209,7 +209,7 @@ const schema = Enjoi.schema({
 Also with functions.
 
 ```javascript
-const schema = Enjoi.schema({
+const schema = Json2Joi.schema({
     type: 'thing'
 }, {
     extensions: [{
@@ -231,7 +231,7 @@ const schema = Enjoi.schema({
 You can use the refine type function to help refine types based on `type` and `format`. This will allow transforming a type for lookup. 
 
 ```javascript
-const schema = Enjoi.schema({
+const schema = Json2Joi.schema({
     type: 'string',
     format: 'email'
 }, {
@@ -255,7 +255,7 @@ const schemaDesc = {
     format: 'email',
     'x-test': true
 }
-const schema = Enjoi.schema(schemaDesc, {
+const schema = Json2Joi.schema(schemaDesc, {
     extensions: [{
         type: 'email',
         validate(value, helpers) {

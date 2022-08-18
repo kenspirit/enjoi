@@ -1,5 +1,5 @@
 {
-  "name": "@kenspirit/enjoi",
+  "name": "json-2-joi",
   "version": "1.0.0",
   "license": "Apache 2.0",
   "description": "Converts json-schema to Joi schema.",
@@ -11,26 +11,28 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/kenspirit/enjoi.git"
+    "url": "git://github.com/kenspirit/json-2-joi.git"
   },
   "engines": {
     "node": ">=12"
   },
   "keywords": [
     "json-to-joi",
+    "json-2-joi",
     "joi",
     "json-schema",
     "json",
     "schema",
     "validation",
     "conversion",
-    "hapi"
+    "hapi",
+    "enjoi"
   ],
   "author": "Ken Chen <chengusky@gmail.com>",
   "bugs": {
-    "url": "https://github.com/kenspirit/enjoi/issues"
+    "url": "https://github.com/kenspirit/json-2-joi/issues"
   },
-  "homepage": "https://github.com/kenspirit/enjoi",
+  "homepage": "https://github.com/kenspirit/json-2-joi",
   "dependencies": {
     "@hapi/bourne": "^3.0.0",
     "@hapi/hoek": "^9.3.0",
