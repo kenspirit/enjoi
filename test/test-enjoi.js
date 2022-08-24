@@ -1,5 +1,6 @@
 
 const Test = require('tape');
+const Joi = require('joi');
 const Enjoi = require('../index');
 
 Test('enjoi', function (t) {
@@ -93,5 +94,68 @@ Test('enjoi', function (t) {
         t.equal(enjoi.joiSharedSchemas.size, 2);
         t.ok(enjoi.joiSharedSchemas.get('measurement'), 'measurement should exists');
         t.ok(enjoi.joiSharedSchemas.get('measurement#subNumber'), 'subNumber should exists');
+    })
+
+    t.test('joiInstance directly provided', function (t) {
+        t.plan(4);
+
+        const joiInstance = Joi.defaults((schema) => schema.options({
+            allowUnknown: false,
+            abortEarly: false,
+            noDefaults: true
+        }));
+
+        const schema = Enjoi.schema(
+            {
+                type: 'object',
+                properties: {
+                    inner: {
+                        type: 'object',
+                        properties: {
+                            x: {
+                                type: 'string'
+                            },
+                            y: {
+                                type: 'number',
+                                default: 1
+                            }
+                        }
+                    }
+                }
+            },
+            {
+            },
+            joiInstance
+        );
+
+        const { error: error0 } = schema.validate({ inner: { x: 123, y: 'blah', z: true } });
+        t.ok(error0);
+        t.equal(error0.details.length, 2);
+
+        const { error: error1 } = schema.validate({ inner: "{ x: 123, y: 'blah', z: true }" });
+        t.equal(error1.details[0].message, "\"inner\" must be of type object");
+
+        const schema1 = Enjoi.schema(
+            {
+                type: 'object',
+                properties: {
+                    inner: {
+                        type: 'object',
+                        properties: {
+                            x: {
+                                type: 'string'
+                            },
+                            y: {
+                                type: 'number',
+                                default: 1
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        const { value: value1 } = schema1.validate({ inner: '{ "x": "yeah", "y": 123 }' });
+        t.deepEqual(value1, { inner: { x: 'yeah', y: 123 } });
     })
 });

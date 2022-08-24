@@ -135,20 +135,6 @@ Test('types', function (t) {
         t.ok(!schema.validate(true).error, 'no error');
     });
 
-    t.test('boolean strictMode', function (t) {
-        t.plan(3);
-
-        const schema = Enjoi.schema({
-            'type': 'boolean'
-        }, {
-            strictMode: true
-        });
-
-        t.ok(schema.validate('1').error, 'error');
-        t.ok(schema.validate('true').error, 'error in strictMode');
-        t.ok(!schema.validate(true).error, 'no error');
-    });
-
     t.test('string regex', function (t) {
         t.plan(3);
 

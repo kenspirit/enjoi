@@ -287,4 +287,64 @@ Test('extensions', function (t) {
 
         t.ok(schema.validate({x: 123}).error);
     })
+
+    t.test('strictMode', function (t) {
+        t.plan(5);
+
+        const schema = Enjoi.schema({
+            'type': 'boolean'
+        }, {
+            strictMode: true
+        });
+
+        t.ok(schema.validate('1').error, 'error');
+        t.ok(schema.validate('true').error, 'error in strictMode');
+        t.ok(!schema.validate(true).error, 'no error in strictMode');
+
+        const schema1 = Enjoi.schema({
+            'type': 'boolean'
+        }, {
+            joiOptions: {
+                convert: false
+            }
+        });
+
+        t.ok(schema1.validate('1').error, 'error when convert = false');
+        t.ok(!schema1.validate(true).error, 'no error when convert = false');
+    });
+
+    t.test('joiOptions', function (t) {
+        t.plan(4);
+
+        const schema = Enjoi.schema(
+          {
+              type: 'object',
+              properties: {
+                  x: {
+                      type: 'string'
+                  },
+                  y: {
+                      type: 'number',
+                      default: 1
+                  }
+              }
+          },
+          {
+              useDefaults: true, // No effect
+              joiOptions: {
+                  allowUnknown: false,
+                  abortEarly: false,
+                  noDefaults: true
+              }
+          }
+        );
+
+        const { error: error0 } = schema.validate({ x: 123, y: 'blah', z: true });
+        t.ok(error0);
+        t.equal(error0.details.length, 3);
+
+        const { value: value1, error: error1 } = schema.validate({ x: '123' });
+        t.ok(!error1);
+        t.deepEqual(value1, { x: '123' })
+    })
 });

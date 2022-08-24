@@ -12,6 +12,8 @@ Converts a JSON schema to a Joi schema for object validation.
 - Support `example` setting for Joi based on JSON schema's `examples`, `default` or `enum`
 - Support `contains` keyword in JSON schema using Joi's `has` method
 - Support `$anchor` keyword in JSON schema
+- Support providing `joiOptions` for JOI default instance creation.
+- Support directly passing a Joi instance for schema building.
 - Remove `defaults` API.  Please refer to section **Reuse JOI Schema Resolver** for similar usage.
 - **Big Change** on `$ref` and `subSchemas`.  Please refer to [test/test-references.js](test/test-references.js) for detail usage.  Currently, four format of `$ref` are supported:
     * id
@@ -37,10 +39,11 @@ Please file issues for other unsupported features.
 
 ### API
 
-- `json2Joi.schema(schema [, options])`
+- `json2Joi.schema(schema [, options, joiInstance])`
     - `schema` - a JSON schema or a string type representation (such as `'integer'`).
     - `options` - an (optional) object of additional options such as `subSchemas` and custom `types`.
-- `json2Joi.resolver(options)` - Creates a schema resolver based on `options`.
+    - `joiInstance` - a (optional) Joi instance to be used.  When passed, it will be used directly.  `extensions` option does not take effect and the Object/Array auto coerce extensions will not be included as well.
+- `json2Joi.resolver(options [, joiInstance])` - Creates a schema resolver based on `options`.  `joiInstance` is same as above.
 
 ### Options
 
@@ -80,6 +83,15 @@ const schema = Json2Joi.schema({
 
 const { error, value } = schema.validate({firstName: 'John', lastName: 'Doe', age: 45});
 ```
+schema.additionalProperties !== false
+### joiOptions
+
+When this option is provided, a Joi instance will be created as `joiInstance = Joi.defaults((schema) => schema.options(joiOptions));` for building Joi Schema.
+
+As a result:
+* `useDefaults` will take effect only if `noDefaults` is NOT true in `joiOptions`.
+* `unknown` setting (originally set by schema.additionalProperties !== false) of the schema will take effect only if `allowUnknown` is NOT provided in `joiOptions`.
+
 
 ### Sub Schemas
 
