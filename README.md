@@ -4,7 +4,7 @@
 
 Converts a JSON schema to a Joi schema for object validation.
 
-## Change based on the forked version (Json2Joi):
+## Change based on the forked version (Enjoi):
 
 - Provided `refineDescription(schema)`, `allowNull` options
 - Change cycle reference resovling without self-generating id and rely on $id if defined in JSON schema
@@ -15,6 +15,7 @@ Converts a JSON schema to a Joi schema for object validation.
 - Support providing `joiOptions` for JOI default instance creation.
 - Support directly passing a Joi instance for schema building.
 - Remove `defaults` API.  Please refer to section **Reuse JOI Schema Resolver** for similar usage.
+- Remove `strictMode` and `useDefaults` option.
 - **Big Change** on `$ref` and `subSchemas`.  Please refer to [test/test-references.js](test/test-references.js) for detail usage.  Currently, four format of `$ref` are supported:
     * id
     * [baseUri]#anchor
@@ -53,7 +54,6 @@ Please file issues for other unsupported features.
 - `refineSchema(joiSchema, jsonSchema)` - an (optional) function to call to apply to adjust Joi schema base on the original JSON schema. Primary use case is handling `nullable` flag in OpenAPI 3.0
 - `extensions` - an array of extensions to pass [joi.extend](https://github.com/hapijs/joi/blob/master/API.md#extendextension).
 - `allowNull` - Allows null value when the field is NOT required with a default value of `false`.
-- `strictMode` - make schemas `strict(value)` with a default value of `false`.
 
 Example:
 
@@ -89,9 +89,9 @@ schema.additionalProperties !== false
 When this option is provided, a Joi instance will be created as `joiInstance = Joi.defaults((schema) => schema.options(joiOptions));` for building Joi Schema.
 
 As a result:
-* `useDefaults` will take effect only if `noDefaults` is NOT true in `joiOptions`.
 * `unknown` setting (originally set by schema.additionalProperties !== false) of the schema will take effect only if `allowUnknown` is NOT provided in `joiOptions`.
-
+* Original `useDefaults` option will be replaced by `noDefaults` in `joiOptions`.
+* Original `strictMode` option will be replaced by `convert` in `joiOptions`.
 
 ### Sub Schemas
 

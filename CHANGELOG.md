@@ -1,3 +1,7 @@
+### 2.0.0
+
+* [BREAKING] Remove `useDefaults` and `strictMode` options
+
 ### 1.1.0
 
 - Support providing `joiOptions` for JOI default instance creation.
