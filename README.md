@@ -4,7 +4,7 @@
 
 Converts a JSON schema to a Joi schema for object validation.
 
-## Change based on the forked version (Enjoi):
+## Change based on the forked version (enjoi):
 
 - Provided `refineDescription(schema)`, `allowNull` options
 - Change cycle reference resovling without self-generating id and rely on $id if defined in JSON schema
