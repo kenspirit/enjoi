@@ -505,6 +505,26 @@ Test('types', function (t) {
         t.deepEqual(joiDesc.keys.lengthUnit.examples, ['cm'], 'example should be set based on examples');
     });
 
+    t.test('examples - array', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                simpleArray: {
+                    type: 'array',
+                    items: {
+                        type: 'string'
+                    },
+                    examples: ['cm']
+                }
+            }
+        });
+
+        const joiDesc = schema.describe();
+        t.deepEqual(joiDesc.keys.simpleArray.examples, [['cm']], 'example should be set based on examples');
+    });
+
     t.test('examples - set by enum', function (t) {
         t.plan(1);
 

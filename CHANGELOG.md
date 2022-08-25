@@ -1,3 +1,7 @@
+### 2.0.1
+
+- Set correct examples data for Array type field.
+
 ### 2.0.0
 
 * [BREAKING] Remove `useDefaults` and `strictMode` options
