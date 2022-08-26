@@ -1,3 +1,8 @@
+### 2.0.2
+
+- Remove `min` setting from JOI schema if `minLength` is not defined in JSON schema.
+- Allow `null` value as Array's item if `allowNull` option is set to true.
+
 ### 2.0.1
 
 - Set correct examples data for Array type field.

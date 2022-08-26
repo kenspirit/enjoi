@@ -18,6 +18,30 @@ Test('types', function (t) {
         t.ok(schema.validate({}).error, 'error');
     });
 
+    t.test('array allowing null item', function (t) {
+        t.plan(2);
+
+        const schema = Enjoi.schema({
+            'type': 'array',
+            'items': {
+                'type': 'string'
+            }
+        }, {
+            allowNull: true
+        });
+
+        t.ok(!schema.validate(['1', null]).error, 'no error');
+
+        const schema1 = Enjoi.schema({
+            'type': 'array',
+            'items': {
+                'type': 'string'
+            }
+        });
+
+        t.ok(schema1.validate(['1', null]).error, 'error');
+    });
+
     t.test('arrays and numbers', function (t) {
         t.plan(2);
 
