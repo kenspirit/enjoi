@@ -50,8 +50,8 @@ Test('options features', function (t) {
         t.equal(joiDesc.flags.description, 'NORMAL STRING', 'Schema description should be transformed correctly');
     });
 
-    t.test('allowNull', function (t) {
-        t.plan(1);
+    t.test('allowNull === true', function (t) {
+        t.plan(2);
 
         const schema = Enjoi.schema({
             type: 'object',
@@ -64,8 +64,95 @@ Test('options features', function (t) {
             allowNull: true
         });
 
-        const joiDesc = schema.describe();
-        t.ok(joiDesc.keys.fieldA.allow.includes(null), 'Should allow null for NOT required field');
+        t.ok(!schema.validate({ fieldA: null }).error, 'no error if null');
+        t.ok(!schema.validate({ fieldA: '' }).error, 'no error if empty');
+    });
+
+    t.test('allowNull === false', function (t) {
+        t.plan(2);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                fieldA: {
+                    type: 'string'
+                }
+            }
+        });
+
+        t.ok(schema.validate({ fieldA: null }).error, 'error if null');
+        t.ok(!schema.validate({ fieldA: '' }).error, 'no error if empty');
+    });
+
+    t.test('strictEnum === false', function (t) {
+        t.plan(3);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                fieldA: {
+                    type: 'string',
+                    enum: ['A']
+                },
+                fieldB: {
+                    type: 'number',
+                    enum: [0, 1]
+                }
+            }
+        }, {
+            allowNull: true,
+            strictEnum: false
+        });
+
+        t.ok(!schema.validate({ fieldA: '' }).error, 'Should allow empty string');
+        t.ok(!schema.validate({ fieldA: null }).error, 'Should allow null for string');
+        t.ok(!schema.validate({ fieldB: null }).error, 'Should allow null for number');
+    });
+
+    t.test('strictEnum === true', function (t) {
+        t.plan(3);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                fieldA: {
+                    type: 'string',
+                    enum: ['A']
+                },
+                fieldB: {
+                    type: 'number',
+                    enum: [0, 1]
+                }
+            }
+        }, {
+            allowNull: true
+        });
+
+        t.ok(schema.validate({ fieldA: '' }).error, 'Should not allow empty string');
+        t.ok(schema.validate({ fieldA: null }).error, 'Should not allow null for string');
+        t.ok(schema.validate({ fieldB: null }).error, 'Should not allow null for number');
+    });
+
+    t.test('enableEnum', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                fieldA: {
+                    type: 'string',
+                    enum: ['A']
+                },
+                fieldB: {
+                    type: 'number',
+                    enum: [0, 1]
+                }
+            }
+        }, {
+            enableEnum: false
+        });
+
+        t.ok(!schema.validate({ fieldA: 'B', fieldB: 2 }).error, 'Should not restrict by enum');
     });
 
     t.test('custom type', function (t) {

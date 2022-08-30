@@ -96,6 +96,51 @@ Test('enjoi', function (t) {
         t.ok(enjoi.joiSharedSchemas.get('measurement#subNumber'), 'subNumber should exists');
     })
 
+    t.test('convert - override options', function(t) {
+        t.plan(3);
+
+        const subSchemas = {
+            measurement: {
+                type: 'object',
+                properties: {
+                    quantity: {
+                        type: 'number',
+                        enum: [0, 1]
+                    }
+                }
+            }
+        };
+        const enjoi = Enjoi.resolver({
+            subSchemas,
+            enableEnum: false
+        });
+
+        const jsonSchema = {
+            type: 'object',
+            properties: {
+                weight: {
+                    type: 'object',
+                    properties: {
+                        quantity: {
+                            type: 'number',
+                            enum: [0, 1]
+                        }
+                    }
+                },
+                length: {
+                    $ref: 'measurement'
+                }
+            }
+        };
+
+        const schema1 = enjoi.convert(jsonSchema, { enableEnum: true });
+        const schema2 = enjoi.convert(jsonSchema);
+
+        t.ok(schema1.validate({ weight: { quantity: 2 } }).error, 'follow overridden options');
+        t.ok(!schema1.validate({ length: { quantity: 2 } }).error, 'no impact on subschemas');
+        t.ok(!schema2.validate({ weight: { quantity: 2 } }).error, 'still use original options');
+    })
+
     t.test('joiInstance directly provided', function (t) {
         t.plan(4);
 

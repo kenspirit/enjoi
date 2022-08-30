@@ -132,6 +132,19 @@ Test('types', function (t) {
         t.ok(!schema.validate(0).error, 'no error');
     });
 
+    t.test('number enum', function (t) {
+        t.plan(3);
+
+        const schema = Enjoi.schema({
+            'type': 'number',
+            'enum': [0, 1]
+        });
+
+        t.ok(schema.validate(2).error, 'error');
+        t.ok(!schema.validate(1).error, 'no error');
+        t.ok(!schema.validate(0).error, 'no error');
+    });
+
     t.test('arrays and unique', function (t) {
         t.plan(2);
 

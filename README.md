@@ -6,7 +6,7 @@ Converts a JSON schema to a Joi schema for object validation.
 
 ## Change based on the forked version (enjoi):
 
-- Provided `refineDescription(schema)`, `allowNull` options
+- Provided `refineDescription(schema)`, `allowNull`, `strictEnum`, `enableEnum` options
 - Change cycle reference resovling without self-generating id and rely on $id if defined in JSON schema
 - Support `const` keyword in JSON schema
 - Support `example` setting for Joi based on JSON schema's `examples`, `default` or `enum`
@@ -53,7 +53,9 @@ Please file issues for other unsupported features.
 - `refineType(type, format)` - an (optional) function to call to apply to type based on the type and format of the JSON schema.
 - `refineSchema(joiSchema, jsonSchema)` - an (optional) function to call to apply to adjust Joi schema base on the original JSON schema. Primary use case is handling `nullable` flag in OpenAPI 3.0
 - `extensions` - an array of extensions to pass [joi.extend](https://github.com/hapijs/joi/blob/master/API.md#extendextension).
-- `allowNull` - Allows null value when the field is NOT required with a default value of `false`.
+- `allowNull` - Default as `false`.  When `true` and the field has no `enum` setting, `null` value will be allowed.
+- `strictEnum` - Default as `true`.  When `false`, and `allowNull` is `true`, `null` (and empty string additionally for string type) will be added to `enum` list.
+- `enableEnum` - Default as `true`.  When `false`, `enum` restriction will not be added to Joi Schema.
 
 Example:
 
@@ -202,6 +204,64 @@ const lengthSchema = json2Joi.convert({
         }
     }
 });
+```
+
+#### Override options during conversion
+
+When reusing the Resolver and calling `convert` API, it's possible that different schema might have different requirement.
+
+It's possible to override these options for each conversion:
+
+* refineType
+* refineSchema
+* refineDescription
+* allowNull
+* strictEnum
+* enableEnum
+
+However, the overriden options do not have impact on the `subSchemas` as they are preprocessed during Resolver construction.
+
+```javascript
+const subSchemas = {
+    measurement: {
+        type: 'object',
+        properties: {
+            quantity: {
+                type: 'number',
+                enum: [0, 1]
+            }
+        }
+    }
+};
+const enjoi = Enjoi.resolver({
+    subSchemas,
+    enableEnum: false
+});
+
+const jsonSchema = {
+    type: 'object',
+    properties: {
+        weight: {
+            type: 'object',
+            properties: {
+                quantity: {
+                    type: 'number',
+                    enum: [0, 1]
+                }
+            }
+        },
+        length: {
+            $ref: 'measurement'
+        }
+    }
+};
+
+const schema1 = enjoi.convert(jsonSchema, { enableEnum: true });
+const schema2 = enjoi.convert(jsonSchema);
+
+t.ok(schema1.validate({ weight: { quantity: 2 } }).error, 'follow overridden options');
+t.ok(!schema1.validate({ length: { quantity: 2 } }).error, 'no impact on subschemas');
+t.ok(!schema2.validate({ weight: { quantity: 2 } }).error, 'still use original options');
 ```
 
 ### Custom Types

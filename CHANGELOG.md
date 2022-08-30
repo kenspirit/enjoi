@@ -1,3 +1,9 @@
+### 2.1.0
+
+- Fix the issue that `enum` is only applied to `string` type or when missing type info.
+- Add `strictEnum` and `enableEnum` option.
+- Allow override options when calling `convert` api.
+
 ### 2.0.2
 
 - Remove `min` setting from JOI schema if `minLength` is not defined in JSON schema.
