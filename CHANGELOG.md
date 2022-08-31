@@ -1,3 +1,7 @@
+### 2.3.0
+
+- If `noDefaults` is set `true`, `default()` will not be set to Joi schema and allow it overridable.
+
 ### 2.2.0
 
 - Add `forbidArrayNull`, `strictRequired` option.

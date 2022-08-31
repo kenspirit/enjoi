@@ -97,7 +97,7 @@ Test('enjoi', function (t) {
     })
 
     t.test('convert - override options', function(t) {
-        t.plan(3);
+        t.plan(5);
 
         const subSchemas = {
             measurement: {
@@ -123,7 +123,8 @@ Test('enjoi', function (t) {
                     properties: {
                         quantity: {
                             type: 'number',
-                            enum: [0, 1]
+                            enum: [0, 1],
+                            default: 0
                         }
                     }
                 },
@@ -134,11 +135,14 @@ Test('enjoi', function (t) {
         };
 
         const schema1 = enjoi.convert(jsonSchema, { enableEnum: true });
-        const schema2 = enjoi.convert(jsonSchema);
+        const schema2 = enjoi.convert(jsonSchema, { noDefaults: true });
+        const schema3 = enjoi.convert(jsonSchema);
 
         t.ok(schema1.validate({ weight: { quantity: 2 } }).error, 'follow overridden options');
         t.ok(!schema1.validate({ length: { quantity: 2 } }).error, 'no impact on subschemas');
         t.ok(!schema2.validate({ weight: { quantity: 2 } }).error, 'still use original options');
+        t.deepEqual(schema2.validate({ weight: {} }).value, { weight: {} }, 'should have no default value');
+        t.deepEqual(schema3.validate({ weight: {} }).value, { weight: { quantity: 0 } }, 'should have default value');
     })
 
     t.test('joiInstance directly provided', function (t) {

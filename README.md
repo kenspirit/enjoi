@@ -49,10 +49,11 @@ Please file issues for other unsupported features.
 ### Options
 
 - `subSchemas` - an (optional) object with keys representing schema ids, and values representing schemas.
+- `extensions` - an array of extensions to pass [joi.extend](https://github.com/hapijs/joi/blob/master/API.md#extendextension).
+- `joiOptions` - Options directly passed to Joi for instance creation.  If the `noDefaults` is set `true`, `default()` will NOT be called and applied to Joi schema.
 - `refineDescription(schema)` - an (optional) function to call to apply to the JSON schema so that it's possible to return customized description.
 - `refineType(type, format)` - an (optional) function to call to apply to type based on the type and format of the JSON schema.
 - `refineSchema(joiSchema, jsonSchema)` - an (optional) function to call to apply to adjust Joi schema base on the original JSON schema. Primary use case is handling `nullable` flag in OpenAPI 3.0
-- `extensions` - an array of extensions to pass [joi.extend](https://github.com/hapijs/joi/blob/master/API.md#extendextension).
 - `allowNull` - Default as `false`.  When `true` and the field has no `enum` setting, `null` value will be allowed.
 - `forbidArrayNull` - Default as `true`.  When `false` and `allowNull` is true, `null` value will be allowed for array type field.
 - `strictRequired` - Default as `false`.  When `true`, `null` (and empty string additionally for string type) will NOT be allowed for those `required` field in object.
@@ -222,6 +223,7 @@ It's possible to override these options for each conversion:
 * strictRequired
 * strictEnum
 * enableEnum
+* noDefaults (Copied from `joiOptions` for the construction time)
 
 However, the overriden options do not have impact on the `subSchemas` as they are preprocessed during Resolver construction.
 
