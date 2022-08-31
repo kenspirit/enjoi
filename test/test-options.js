@@ -84,6 +84,47 @@ Test('options features', function (t) {
         t.ok(!schema.validate({ fieldA: '' }).error, 'no error if empty');
     });
 
+    t.test('forbidArrayNull === false', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                fieldA: {
+                    type: 'array',
+                    items: {
+                        type: 'string'
+                    }
+                }
+            }
+        }, {
+            allowNull: true,
+            forbidArrayNull: false
+        });
+
+        t.ok(!schema.validate({ fieldA: null }).error, 'no error if null');
+    });
+
+    t.test('forbidArrayNull === true', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                fieldA: {
+                    type: 'array',
+                    items: {
+                        type: 'string'
+                    }
+                }
+            }
+        }, {
+            allowNull: true
+        });
+
+        t.ok(schema.validate({ fieldA: null }).error, 'error if null');
+    });
+
     t.test('strictEnum === false', function (t) {
         t.plan(3);
 
@@ -395,4 +436,68 @@ Test('extensions', function (t) {
         t.ok(!error1);
         t.deepEqual(value1, { x: '123' })
     })
+
+    t.test('strictRequired === true', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            "required": [
+                "mode"
+            ],
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "enum": [
+                        "Vessel",
+                        "Truck",
+                        "Rail",
+                        "Feeder",
+                        "Barge",
+                        "Air",
+                        "Other"
+                    ],
+                    "type": "string",
+                    "examples": "Vessel"
+                }
+            }
+        }, {
+            strictEnum: false,
+            strictRequired: true,
+            allowNull: true
+        });
+
+        t.ok(schema.validate({ mode: null }).error, 'has error on null value');
+    });
+
+    t.test('strictRequired === false', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            "required": [
+                "mode"
+            ],
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "enum": [
+                        "Vessel",
+                        "Truck",
+                        "Rail",
+                        "Feeder",
+                        "Barge",
+                        "Air",
+                        "Other"
+                    ],
+                    "type": "string",
+                    "examples": "Vessel"
+                }
+            }
+        }, {
+            strictEnum: false,
+            strictRequired: false,
+            allowNull: true
+        });
+
+        t.ok(!schema.validate({ mode: null }).error, 'no error on null value');
+    });
 });

@@ -1,3 +1,7 @@
+### 2.2.0
+
+- Add `forbidArrayNull`, `strictRequired` option.
+
 ### 2.1.0
 
 - Fix the issue that `enum` is only applied to `string` type or when missing type info.
