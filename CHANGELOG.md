@@ -1,3 +1,7 @@
+### 2.3.2
+
+- Enhance `null` value support when `type` is array and contains `null`.
+
 ### 2.3.1
 
 - Fix `noDefaults` options validation issue.

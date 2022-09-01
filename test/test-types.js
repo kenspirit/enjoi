@@ -632,15 +632,28 @@ Test('types', function (t) {
     });
 
     t.test('array for type with null support', function (t) {
-        t.plan(3);
+        t.plan(8);
 
         const schema = Enjoi.schema({
             'type': ['string', 'null']
         });
+        const schema1 = Enjoi.schema({
+            'type': ['null']
+        });
+        const schema2 = Enjoi.schema({
+            'type': ['string', 'number', 'null']
+        });
 
-        t.ok(!schema.validate('test').error, 'no error.');
-        t.ok(!schema.validate(null).error, 'no error.');
-        t.ok(schema.validate(false).error, 'error.');
+        t.ok(!schema.validate('test').error, 'no error for string.');
+        t.ok(!schema.validate(null).error, 'no error for null.');
+        t.ok(schema.validate(false).error, 'error if not string or null.');
+
+        t.ok(schema1.validate('').error, 'error for empty string.');
+        t.ok(!schema1.validate(null).error, 'only null no error.');
+
+        t.ok(!schema2.validate(null).error, 'no error if null.');
+        t.ok(!schema2.validate('').error, 'no error if string.');
+        t.ok(!schema2.validate(2).error, 'no error if number.');
     });
 });
 
