@@ -1,3 +1,7 @@
+### 2.4.0
+
+- Add `customizedNullValues` option.
+
 ### 2.3.2
 
 - Enhance `null` value support when `type` is array and contains `null`.

@@ -6,7 +6,7 @@ Converts a JSON schema to a Joi schema for object validation.
 
 ## Change based on the forked version (enjoi):
 
-- Provided `refineDescription(schema)`, `allowNull`, `forbidArrayNull`, `strictRequired`, `strictEnum`, `enableEnum` options
+- Provided `refineDescription(schema)`, `allowNull`, `forbidArrayNull`, `strictRequired`, `strictEnum`, `enableEnum`, `customizedNullValues` options
 - Change cycle reference resovling without self-generating id and rely on $id if defined in JSON schema
 - Support `const` keyword in JSON schema
 - Support `example` setting for Joi based on JSON schema's `examples`, `default` or `enum`
@@ -55,6 +55,7 @@ Please file issues for other unsupported features.
 - `refineType(type, format)` - an (optional) function to call to apply to type based on the type and format of the JSON schema.
 - `refineSchema(joiSchema, jsonSchema)` - an (optional) function to call to apply to adjust Joi schema base on the original JSON schema. Primary use case is handling `nullable` flag in OpenAPI 3.0
 - `allowNull` - Default as `false`.  When `true` and the field has no `enum` setting, `null` value will be allowed.
+- `customizedNullValues` - Default as `[null]`.  When provided, the value in the array will be treated valid null value when schema is 'null' type or other allowing null case.
 - `forbidArrayNull` - Default as `true`.  When `false` and `allowNull` is true, `null` value will be allowed for array type field.
 - `strictRequired` - Default as `false`.  When `true`, `null` (and empty string additionally for string type) will NOT be allowed for those `required` field in object.
 - `strictEnum` - Default as `true`.  When `false`, and `allowNull` is `true`, `null` (and empty string additionally for string type) will be added to `enum` list.

@@ -525,6 +525,19 @@ Test('types', function (t) {
         t.ok(schema.validate(0).error, 'error');
     });
 
+    t.test('null type', function (t) {
+        t.plan(2);
+
+        const schema = Enjoi.schema({
+            type: 'null'
+        }, {
+            customizedNullValues: [null, '']
+        });
+
+        t.ok(!schema.validate(null).error, 'null is valid');
+        t.ok(!schema.validate('').error, 'empty string is valid');
+    });
+
     t.test('examples', function (t) {
         t.plan(1);
 

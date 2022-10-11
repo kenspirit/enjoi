@@ -84,6 +84,37 @@ Test('options features', function (t) {
         t.ok(!schema.validate({ fieldA: '' }).error, 'no error if empty');
     });
 
+    t.test('customizedNullValues is provided', function (t) {
+        t.plan(4);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                fieldA: {
+                    type: 'number'
+                }
+            }
+        }, {
+            allowNull: true,
+            customizedNullValues: [null, '']
+        });
+        const schema1 = Enjoi.schema({
+            type: 'object',
+            properties: {
+                fieldA: {
+                    type: 'number'
+                }
+            }
+        }, {
+            allowNull: true
+        });
+
+        t.ok(!schema.validate({ fieldA: null }).error, 'no error if null');
+        t.ok(!schema.validate({ fieldA: '' }).error, 'no error if empty');
+        t.ok(!schema1.validate({ fieldA: null }).error, 'no error if null');
+        t.ok(schema1.validate({ fieldA: '' }).error, 'no error if empty');
+    });
+
     t.test('forbidArrayNull === false', function (t) {
         t.plan(1);
 
