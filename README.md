@@ -57,6 +57,7 @@ Please file issues for other unsupported features.
 - `allowNull` - Default as `false`.  When `true` and the field has no `enum` setting, `null` value will be allowed.
 - `customizedNullValues` - Default as `[null]`.  When provided, the value in the array will be treated valid null value when schema is 'null' type or other allowing null case.
 - `forbidArrayNull` - Default as `true`.  When `false` and `allowNull` is true, `null` value will be allowed for array type field.
+- `strictArrayRequired` - Default as `false`.  When `true`, those `required` array-type fields must has at least 1 item and its item must not be `null` item, or value defined by `customizedNullValues`.
 - `strictRequired` - Default as `false`.  When `true`, `null` (and empty string additionally for string type) will NOT be allowed for those `required` field in object.
 - `strictEnum` - Default as `true`.  When `false`, and `allowNull` is `true`, `null` (and empty string additionally for string type) will be added to `enum` list.
 - `enableEnum` - Default as `true`.  When `false`, `enum` restriction will not be added to Joi Schema.
@@ -222,6 +223,7 @@ It's possible to override these options for each conversion:
 * allowNull
 * forbidArrayNull
 * strictRequired
+* strictArrayRequired
 * strictEnum
 * enableEnum
 * noDefaults (Copied from `joiOptions` for the construction time)

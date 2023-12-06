@@ -531,4 +531,128 @@ Test('extensions', function (t) {
 
         t.ok(!schema.validate({ mode: null }).error, 'no error on null value');
     });
+
+    t.test('strictArrayRequired === true, array item is simple value', function (t) {
+        t.plan(4);
+
+        const schema = Enjoi.schema(
+            {
+                "required": [
+                    "mode"
+                ],
+                "type": "object",
+                "properties": {
+                    "mode": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            {
+                allowNull: true,
+                strictArrayRequired: true,
+                customizedNullValues: [null, '', ' ']
+            }
+        );
+
+        t.ok(schema.validate({ mode: [] }).error, 'required array is empty');
+        t.ok(schema.validate({ mode: [null] }).error, 'required array has null value only');
+        t.ok(schema.validate({ mode: ['', ' '] }).error, 'required array has customized null string only');
+        t.ok(!schema.validate({ mode: ['1'] }).error, 'required array is not empty');
+    });
+
+    t.test('strictArrayRequired === true, array item is object', function (t) {
+        t.plan(3);
+
+        const schema = Enjoi.schema(
+            {
+                "required": [
+                    "mode"
+                ],
+                "type": "object",
+                "properties": {
+                    "mode": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "optional": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                allowNull: true,
+                strictArrayRequired: true,
+                customizedNullValues: [null, '', ' ']
+            }
+        );
+
+        t.ok(schema.validate({ mode: [null] }).error, 'object in array not allow null');
+        t.ok(!schema.validate({ mode: [{ optional: null }] }).error, 'field of object in array allows null');
+        t.ok(!schema.validate({ mode: [{ optional: ' ' }] }).error, 'field of object in array allows customized null value');
+    });
+
+    t.test('strictArrayRequired === false, array item is simple value', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema(
+            {
+                "required": [
+                    "mode"
+                ],
+                "type": "object",
+                "properties": {
+                    "mode": {
+                        "type": "array"
+                    }
+                }
+            },
+            {
+                strictArrayRequired: false
+            }
+        );
+
+        t.ok(!schema.validate({ mode: [] }).error, 'required array allows empty');
+    });
+
+    t.test('strictArrayRequired === false, array item is object', function (t) {
+        t.plan(3);
+
+        const schema = Enjoi.schema(
+            {
+                "required": [
+                    "mode"
+                ],
+                "type": "object",
+                "properties": {
+                    "mode": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "optional": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                allowNull: true,
+                strictArrayRequired: false,
+                customizedNullValues: [null, '', ' ']
+            }
+        );
+
+        t.ok(!schema.validate({ mode: [null] }).error, 'object in array allow null');
+        t.ok(!schema.validate({ mode: [{ optional: null }] }).error, 'field of object in array allows null');
+        t.ok(!schema.validate({ mode: [{ optional: ' ' }] }).error, 'field of object in array allows customized null value');
+    });
 });

@@ -1,3 +1,7 @@
+### 2.5.0
+
+- Add `strictArrayRequired` option.
+
 ### 2.4.0
 
 - Add `customizedNullValues` option.
