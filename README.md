@@ -90,7 +90,7 @@ const schema = Json2Joi.schema({
 
 const { error, value } = schema.validate({firstName: 'John', lastName: 'Doe', age: 45});
 ```
-schema.additionalProperties !== false
+
 ### joiOptions
 
 When this option is provided, a Joi instance will be created as `joiInstance = Joi.defaults((schema) => schema.options(joiOptions));` for building Joi Schema.
