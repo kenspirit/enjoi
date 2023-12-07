@@ -532,6 +532,33 @@ Test('extensions', function (t) {
         t.ok(!schema.validate({ mode: null }).error, 'no error on null value');
     });
 
+    t.test('strictArrayRequired === true, array item is not required', function (t) {
+        t.plan(3);
+
+        const schema = Enjoi.schema(
+            {
+                "type": "object",
+                "properties": {
+                    "mode": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            {
+                allowNull: true,
+                strictArrayRequired: true,
+                customizedNullValues: [null, '', ' ']
+            }
+        );
+
+        t.ok(!schema.validate({ mode: [] }).error, 'not required array is empty');
+        t.ok(!schema.validate({ mode: [null] }).error, 'not required array has null value only');
+        t.ok(!schema.validate({ mode: ['', ' '] }).error, 'not required array has customized null string only');
+    });
+
     t.test('strictArrayRequired === true, array item is simple value', function (t) {
         t.plan(4);
 

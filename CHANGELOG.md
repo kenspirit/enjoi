@@ -1,3 +1,7 @@
+### 2.5.1
+
+- Fix `strictArrayRequired` option validation issue when `required` is not set.
+
 ### 2.5.0
 
 - Add `strictArrayRequired` option.
