@@ -481,6 +481,20 @@ Test('types', function (t) {
         t.ok(!schema.validate({ name: 'test' }).error, 'no error.');
     });
 
+    t.test('meta-data annotations', function (t) {
+        t.plan(1);
+
+        const schema = Enjoi.schema({
+            title: 'Title',
+            deprecated: true,
+            readOnly: false,
+            writeOnly: true
+        });
+
+        const joiDesc = schema.describe();
+        t.deepEqual(joiDesc, { type: 'any', metas: [{ title: 'Title', deprecated: true, readOnly: false, writeOnly: true }] }, 'should have meta-data annotations');
+    });
+
     t.test('const as string type', function (t) {
         t.plan(2);
 

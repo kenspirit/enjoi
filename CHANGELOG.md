@@ -1,3 +1,7 @@
+### 3.0.0
+
+- Supports copying the Meta-Data annotations ('title', 'deprecated', 'readOnly', 'writeOnly') to Joi schema.
+
 ### 2.5.1
 
 - Fix `strictArrayRequired` option validation issue when `required` is not set.

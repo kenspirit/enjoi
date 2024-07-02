@@ -1,6 +1,6 @@
 {
   "name": "json-2-joi",
-  "version": "2.5.1",
+  "version": "3.0.0",
   "license": "Apache 2.0",
   "description": "Converts json-schema to Joi schema. (Enhanced enjoi)",
   "main": "./index.js",
@@ -12,9 +12,6 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/kenspirit/json-2-joi.git"
-  },
-  "engines": {
-    "node": ">=12"
   },
   "keywords": [
     "json-to-joi",
@@ -35,17 +32,19 @@
   "homepage": "https://github.com/kenspirit/json-2-joi",
   "dependencies": {
     "@hapi/bourne": "^3.0.0",
-    "@hapi/hoek": "^9.3.0",
-    "debug": "^4.3.4"
+    "@hapi/hoek": "^11.0.4",
+    "debug": "^4.3.5"
   },
   "peerDependencies": {
-    "joi": "^17.6.0"
+    "joi": "^17.13.3"
   },
   "devDependencies": {
-    "joi": "^17.6.0",
-    "eslint": "^6.8.0",
-    "nyc": "^15.1.0",
-    "tape": "^5.5.3"
+    "@eslint/js": "^9.6.0",
+    "eslint": "^9.6.0",
+    "globals": "^15.7.0",
+    "joi": "^17.13.3",
+    "nyc": "^17.0.0",
+    "tape": "^5.8.1"
   },
   "files": [
     "lib/**/*.js",

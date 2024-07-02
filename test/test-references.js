@@ -320,6 +320,7 @@ Test('$ref Cases', function (t) {
                     $defs: {
                         measurement: {
                             $id: 'measurement',
+                            title: 'Bomb',
                             type: 'object',
                             properties: {
                                 quantity: {
