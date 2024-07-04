@@ -273,6 +273,45 @@ Test('directives', function (t) {
         t.ok(schema.validate({ file: 'asdf', consumes: 5 }).error, 'error');
     });
 
+    t.test('inner additionalProperties should be able to override options', function (t) {
+        t.plan(2);
+
+        const schema = Enjoi.schema({
+            type: 'object',
+            properties: {
+                outer: {
+                    type: 'object',
+                    required: ['inner'],
+                    properties: {
+                        inner: {
+                            type: 'string'
+                        }
+                    },
+                    additionalProperties: true
+                }
+            }
+        }, { joiOptions: { allowUnknown: false } });
+
+        t.ok(!schema.validate({ outer: { inner: 'inner', extra: 'pass' } }).error, 'error');
+
+        const noOverride = Enjoi.schema({
+            type: 'object',
+            properties: {
+                outer: {
+                    type: 'object',
+                    required: ['inner'],
+                    properties: {
+                        inner: {
+                            type: 'string'
+                        }
+                    }
+                }
+            }
+        }, { joiOptions: { allowUnknown: false } });
+
+        t.ok(noOverride.validate({ outer: { inner: 'inner', extra: 'pass' } }).error, 'error');
+    })
+
     t.test('array additionalItems', function (t) {
         t.plan(3);
 

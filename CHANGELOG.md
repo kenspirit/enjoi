@@ -1,3 +1,7 @@
+### 3.0.1
+
+- Fix issue that inner `additionalProperties` setting cannot override outer option
+
 ### 3.0.0
 
 - Supports copying the Meta-Data annotations ('title', 'deprecated', 'readOnly', 'writeOnly') to Joi schema.
